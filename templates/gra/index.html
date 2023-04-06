@@ -1,0 +1,70 @@
+{% load static %}
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Game</title>
+        <!--<link rel="stylesheet" href="game/index_style.css"/>-->
+        <link rel="stylesheet" type="text/css" href="{% static 'gra/index_style.css' %}">
+    </head>
+    <body>
+        <div class="container">
+            <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+                <h1><a class="navbar-brand" href="">Alkotest</a></h1>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item mr-0 ml-lg-auto">
+                            <a href=""><img src="{% static 'gra/logo.png' %}"/></a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <div class="container">
+            <div class="jumbotron">
+                <h2>Sesja</h2>
+                <br/>
+                    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                        <div class="input-group-addon">Nr</div>
+                        <input id="sesid" type="plain-text" size=20 class="form-control" placeholder="Nr sesji...">
+                        <button type="submit" class="btn btn-primary" id="goto">Wejdz</button>
+                    </div>
+                    <!--<button type="submit" class="btn btn-primary" id="goto">Wejdz</button>-->
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="jumbotron">
+                <h3>Dolacz jako host</h3>
+                <br/>
+                <form class="form-inline" method="POST" action="http://127.0.0.1:8000/hostSes">
+                    <input id="sesid" type="plain-text" size=20 class="form-control" placeholder="Nr sesji...">
+                    <br/>
+                    <input id="sesid" type="password" size=20 class="form-control" placeholder="Haslo...">
+                    <button type="submit" class="btn btn-primary" id="behost">Wejdz</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="jumbotron">
+                <h3>Utwoz nowa</h3>
+                <br/>
+                <form class="form-inline" method="GET" action="http://127.0.0.1:8000/get_new">
+                        <div class="input-group-addon">New</div>
+                    <button type="submit" class="btn btn-primary">Stworz</button>
+                </form>
+            </div>
+        </div>
+    </body>
+
+    <script>
+      function goToSes() {
+        var x = document.getElementById("sesid").value;
+        var url = "127.0.0.1:8000/gra/" + x;
+        location.replace(x);
+      }
+      var b = document.getElementById("goto");
+      b.addEventListener("click", goToSes, false);
+    </script>
+
+</html>
