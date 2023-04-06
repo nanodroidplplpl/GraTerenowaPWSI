@@ -1,0 +1,19 @@
+{%  extends "gra/baseMenu.html" %}
+
+{% block title %}Stworz Sesje{%  endblock %}
+
+{% block menuContent %}
+ <div class="container">
+            <div class="jumbotron">
+                <h2>Stwórz Nową Sesję</h2>
+                <br/>
+                <form method="post" action="/create_session/" class="form-group">
+                    {% csrf_token %}
+                    {{ form }}
+                    <div class="input-group mb-2 mr-sm-2 mb-sm-0">
+                        <button type="submit" name="create" class="btn btn-primary">Stwórz</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+{% endblock %}

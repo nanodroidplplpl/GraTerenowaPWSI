@@ -43,7 +43,7 @@
                 <h3>Dolacz jako host</h3>
                 <br/>
                 <form class="form-inline" method="POST" action="http://127.0.0.1:8000/hostSes">
-                    <input id="sesid" type="plain-text" size=20 class="form-control" placeholder="Nr sesji...">
+                    <input id="sesid" type="text" size=20 class="form-control" placeholder="Nr sesji...">
                     <br/>
                     <input id="sesid" type="password" size=20 class="form-control" placeholder="Haslo...">
                     <button type="submit" class="btn btn-primary" id="behost">Wejdz</button>
@@ -55,8 +55,7 @@
             <div class="jumbotron">
                 <h3>Utwoz nowa</h3>
                 <br/>
-                <form class="form-inline" method="GET" action="http://127.0.0.1:8000/get_new">
-                        <div class="input-group-addon">New</div>
+                <form action="/create_session/">
                     <button type="submit" class="btn btn-primary">Stworz</button>
                 </form>
             </div>

@@ -23,7 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
     path('<int:ses_id>/', views.room, name='room'),
-    path('get_new/', views.newses, name='newses'),
-    #path('<int:ses_id>/game/add_score/', views.room, name='name'),
-    path('test_photo', views.test_photo, name='test_photo'),
+    # path('get_new/', views.newses, name='newses'),
+    # path('<int:ses_id>/game/add_score/', views.room, name='name'),
+    # path('test_photo', views.test_photo, name='test_photo'),
+    path('create_session/', views.newses, name='newses')
 ]

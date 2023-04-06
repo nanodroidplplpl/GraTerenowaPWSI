@@ -11,6 +11,7 @@ import datetime
 # Create your models here.
 class Sesje(models.Model):
     ses_number = models.CharField(max_length=200)
+    game_name = models.CharField(max_length=200)
     end_time = models.DateTimeField('end date')
     password = models.CharField(max_length=200, default='')
 
