@@ -14,11 +14,13 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
+from django.contrib import admin
 
 from gra import views
 
 app_name = 'gra'
 urlpatterns = [
+    path('admin/', admin.site.urls),
     path('', views.index, name='index'),
     path('<int:ses_id>/', views.room, name='room'),
     path('get_new/', views.newses, name='newses'),

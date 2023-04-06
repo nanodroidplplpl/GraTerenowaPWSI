@@ -45,7 +45,6 @@ def room(request, ses_id):
         return render(request, 'gra/room.html', {'sesja':sss})
 
 
-
 def newses(request):
     what = True
     while(what == True):
