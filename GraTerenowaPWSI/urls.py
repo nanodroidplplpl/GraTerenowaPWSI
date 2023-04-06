@@ -24,4 +24,5 @@ urlpatterns = [
     path('get_new/', views.newses, name='newses'),
     #path('<int:ses_id>/game/add_score/', views.room, name='name'),
     path('test_photo', views.test_photo, name='test_photo'),
+    path('host/<int:ses_id>', views.host_room, name='host_room'),
 ]

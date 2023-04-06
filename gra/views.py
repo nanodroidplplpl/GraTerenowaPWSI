@@ -9,16 +9,6 @@ from django.utils import timezone
 # Create your views here.
 
 def index(request):
-    if request.method == 'POST':
-        data_ses = request.POST.get("sesnr")
-        data_pass = request.POST.get("pass")
-
-        try:
-            sss = Sesje.objects.get(ses_number=data_ses)
-            if data_pass == sss.password:
-                return render(request, 'gra/room.html', {'sesja':sss})
-        except:
-            raise Http404("Nie ma takiej sesji sory...")
     return render(request, 'gra/index.html')
 
 def room(request, ses_id):
@@ -44,7 +34,22 @@ def room(request, ses_id):
             raise Http404("Nie ma takiej sesji sory...")
         return render(request, 'gra/room.html', {'sesja':sss})
 
+#def room_creator(request):
+#    if
 
+def host_room(request):
+    if request.method == 'POST':
+        data_ses = request.POST.get("sesnr")
+        data_pass = request.POST.get("pass")
+
+        try:
+            sss = Sesje.objects.get(ses_number=data_ses)
+            print(sss.password)
+            if data_pass == sss.password:
+                return render(request, 'gra/room.html', {'sesja': sss})
+        except:
+            raise Http404("Nie ma takiej sesji sory...")
+    return render(request, 'gra/room_host.html')
 
 def newses(request):
     what = True
