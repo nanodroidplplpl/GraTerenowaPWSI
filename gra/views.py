@@ -3,6 +3,7 @@ from django.shortcuts import Http404
 from gra.models import Sesje, Gracze
 import datetime, random
 from django.utils import timezone
+from django.http import HttpResponseRedirect
 
 #from game.models import Sesje, Gracze
 #from game.forms import PostScoreForm
@@ -56,7 +57,8 @@ def newses(request):
             s = Sesje(ses_number=num, end_time=timezone.now()+datetime.timedelta(days=7))
 
     s.save()
-    return render(request, 'gra/room.html', {'sesja':s})
+    # return render(request, 'gra/room.html', {'sesja':s})
+    return HttpResponseRedirect("/%i" % num)
 
 def test_photo(request):
     return render(request, 'gra/tesserac_ex.html');
