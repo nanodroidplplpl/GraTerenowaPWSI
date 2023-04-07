@@ -5,17 +5,24 @@
         <meta charset="UTF-8">
         <title>Game</title>
         <!--<link rel="stylesheet" href="game/index_style.css"/>-->
+
+        <!-- Bootstrap4 needed settings -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
         <link rel="stylesheet" type="text/css" href="{% static 'gra/index_style.css' %}">
         <script type="text/javascript" src="https://unpkg.com/tesseract.js@v2.0.0-beta.1/dist/tesseract.min.js"></script>
     </head>
     <body>
         <div class="container">
             <nav class="navbar navbar-toggleable-md navbar-light bg-faded">
-                <h1><a class="navbar-brand" href="">Alkotest</a></h1>
+                <h1><a class="navbar-brand" href="">{{ sesja.game_name }}</a></h1>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav">
                         <li class="nav-item mr-0 ml-lg-auto">
-                            <a href=""><img src="{% static 'gra/logo.png' %}"/></a>
+                            <a href=""><img src="/images/grupa_badawcza_logo.png"/></a>
                         </li>
                     </ul>
                 </div>
@@ -52,7 +59,7 @@
         </div>
         <div class="container" id="unhid" unvisible>
           <div class="jumbotron">
-            <form class"form-inline" method="POST" action="">
+            <form class=form-inline" method="POST" action="">
               {% csrf_token %}
               <input type="text" name="g_nickk"size=20 class="form-control" placeholder="Nick"/>
               <input type="number" name="scoree" size=20 class="form-control" placeholder="Score"/>
@@ -68,7 +75,7 @@
 
 
           <div class="jumbotron">
-            <form class"form-inline" method="POST" action="">
+            <form class="form-inline" method="POST" action="">
               {% csrf_token %}
               <input type="text" name="g_nickk"size=20 class="form-control" placeholder="Nick"/>
               <input id="photoin" type="number" name="scoree" size=20 class="form-control" placeholder="Score"/>
