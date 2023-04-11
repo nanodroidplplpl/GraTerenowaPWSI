@@ -9,7 +9,7 @@ from .forms import CreateNewSession
 #from game.models import Sesje, Gracze
 #from game.forms import PostScoreForm
 # Create your views here.
-
+dasfdasas
 def index(request):
     if request.method == 'POST':
         data_ses = request.POST.get("sesnr")
