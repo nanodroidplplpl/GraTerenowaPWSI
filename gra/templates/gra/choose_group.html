@@ -1,0 +1,58 @@
+<!-- gra/game.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Twoja Gra</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Ustawianie wartości pola "nick_hidden" przed wysłaniem formularza
+            $('.ekipy button').click(function() {
+                var nickValue = $('#nick').val();
+                var form = $(this).closest('form');
+                var nickHidden = form.find('.nick_hidden');
+                nickHidden.val(nickValue);
+            });
+
+            // Ustawianie wartości pola "nick_hidden" przed wysłaniem formularza
+            $('.moja_ekipa form').submit(function() {
+                var nickValue = $('#nick').val();
+                var nickHidden = $(this).find('.nick_hidden');
+                nickHidden.val(nickValue);
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Dołącz do gry</h1>
+    <form method="post" action="{% url 'group_screen' %}" id="dołącz_do_gry">
+        {% csrf_token %}
+        <input type="text" name="nick" id="nick" placeholder="Wpisz swój nick..." required>
+        <input type="hidden" name="nick_hidden" class="nick_hidden" value="">
+    </form>
+    <h2>Stwórz grupę</h2>
+    <div class="moja_ekipa">
+        <form method="post" action="{% url 'group_screen' %}">
+            {% csrf_token %}
+            <input type="hidden" name="nick_hidden" class="nick_hidden" value="">
+            <input type="text" name="grupa" placeholder="Wpisz nazwę grupy..." required>
+            <button type="submit">Stwórz grupę</button>
+        </form>
+    </div>
+    <h2>Ekipy</h2>
+    <div class="ekipy">
+        {% for ekipa in ekipy %}
+            <form method="post" action="{% url 'group_screen' %}">
+                {% csrf_token %}
+                <input type="hidden" name="nick_hidden" class="nick_hidden" value="">
+                <input type="hidden" name="grupa" class="grupa" value="{{ ekipa.ekipy_id }}">
+                <button type="submit">
+                    {{ ekipa.nazwa_ekipy }}
+                    <span class="grupa">{{ ekipa.ekipy_id }}</span>
+                    <span class="czlonkowie">{{ ekipa.czlonkowie }}</span>
+                </button>
+            </form>
+        {% endfor %}
+    </div>
+</body>
+</html>

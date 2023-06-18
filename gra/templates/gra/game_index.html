@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Główne okno aplikacji</title>
+  <style>
+    /* Stylowanie kontenera */
+    #container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    /* Stylowanie formularza dołączania do gry */
+    #join-form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    /* Stylowanie formularza logowania hosta */
+    #host-login-form {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    /* Stylowanie przycisku utworzenia gry */
+    #create-game-btn {
+      align-self: flex-end;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <form id="join-form" action="{% url 'choose_gorup' %}" method="post">
+      {% csrf_token %}
+      <label for="join-input">Dołącz do gry:</label>
+      <input type="text" id="join-input" name="join_code" required>
+      <button type="submit">Dołącz</button>
+    </form>
+
+    <form id="host-login-form" action="{% url 'zaslepka' %}" method="post">
+      {% csrf_token %}
+      <label for="host-id-input">ID hosta:</label>
+      <input type="text" id="host-id-input" name="host_id" required>
+
+      <label for="host-password-input">Hasło:</label>
+      <input type="password" id="host-password-input" name="host_password" required>
+
+      <button type="submit">Zaloguj jako host</button>
+    </form>
+
+    <a id="create-game-btn" href="{% url 'host_game_create' %}">Utwórz grę</a>
+  </div>
+</body>
+</html>

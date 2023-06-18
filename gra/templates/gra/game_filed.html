@@ -1,0 +1,56 @@
+<!-- gra/pokaz_azymut.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pokaz Azymut</title>
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 400px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pokaz Azymut</h1>
+    <div id="azymut">
+        <h2>Azymut</h2>
+        <span>
+            {% if azymut %}
+                {{ azymut }}
+            {% else %}
+                Północ
+            {% endif %}
+        </span>
+        <h2>Zostało:</h2>
+        <span>{{ parametr_django }}</span>
+    </div>
+    <div>
+        <h2>Miejsca</h2>
+        <select id="miejsca">
+            {% for miejsce in miejsca %}
+                <option value="{{ miejsce.id }}">{{ miejsce.nazwa }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div id="map"></div>
+    <script>
+        var map = L.map('map').setView([51.505, -0.09], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+            maxZoom: 18,
+        }).addTo(map);
+
+        var punkty = [
+            {% for punkt in punkty %}
+                [{{ punkt.lat }}, {{ punkt.lng }}],
+            {% endfor %}
+        ];
+
+        for (var i = 0; i < punkty.length; i++) {
+            L.marker(punkty[i]).addTo(map);
+        }
+    </script>
+</body>
+</html>

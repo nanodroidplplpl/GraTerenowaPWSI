@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+{% load static %}
+<html>
+<head>
+    <title>{{ tytul }}</title>
+</head>
+<body>
+    <h1>{{ tytul }}</h1>
+    <div class="ekipa">
+        <h2>Twój nick</h2>
+        <div class="czlonkowie">
+            <div class="czlonek">
+                <img src="{% static 'gra/images.png' %}" alt="Ikona użytkownika">
+                <span>{{ twój_nick }}</span>
+            </div>
+        </div>
+        <h2>Inni członkowie</h2>
+        <div class="czlonkowie">
+            {% for nick in inni_czlonkowie %}
+                <div class="czlonek">
+                    <span>{{ nick.g_nick }}</span>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <form method="post" action="{% url 'game_filed' %}">
+        {% csrf_token %}
+        <input type="hidden" name="grupa" value="{{ tytul }}">
+        {% for nick in inni_czlonkowie %}
+            <input type="hidden" name="czlonkowie" value="{{ nick.g_nick }}">
+        {% endfor %}
+        <button type="submit">Start</button>
+    </form>
+</body>
+</html>

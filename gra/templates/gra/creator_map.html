@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% load leaflet_tags %}
+    {% leaflet_js %}
+    {% leaflet_css %}
+</head>
+<body>
+    <div id="mapid" style="height: 500px;"></div>
+    {% leaflet_map "mapid" callback="initMap" %}
+</body>
+</html>
