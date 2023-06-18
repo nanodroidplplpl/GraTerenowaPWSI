@@ -1,60 +1,83 @@
+
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Główne okno aplikacji</title>
-  <style>
-    /* Stylowanie kontenera */
-    #container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
+    <title>Główne okno aplikacji</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
+    <style>
+        /* Stylowanie kontenera */
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-image: url("{% static '/gra/game_index_background.jpg' %} ");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
 
-    /* Stylowanie formularza dołączania do gry */
-    #join-form {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 20px;
-    }
 
-    /* Stylowanie formularza logowania hosta */
-    #host-login-form {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      margin-bottom: 20px;
-    }
 
-    /* Stylowanie przycisku utworzenia gry */
-    #create-game-btn {
-      align-self: flex-end;
-    }
-  </style>
+        /* Stylowanie formularza dołączania do gry */
+        #join-form {
+            margin-bottom: 20px;
+        }
+
+        /* Stylowanie formularza logowania hosta */
+        #host-login-form {
+            margin-bottom: 20px;
+        }
+
+        /* Stylowanie przycisku utworzenia gry */
+        #create-game-btn {
+            align-self: flex-end;
+        }
+    </style>
 </head>
+
 <body>
-  <div id="container">
+{% include 'gra/navbar.html' %}
+<div id="container" class="container">
     <form id="join-form" action="{% url 'choose_gorup' %}" method="post">
-      {% csrf_token %}
-      <label for="join-input">Dołącz do gry:</label>
-      <input type="text" id="join-input" name="join_code" required>
-      <button type="submit">Dołącz</button>
-    </form>
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="join-input">Dołącz do gry:</label>
+            <input type="text" class="form-control" id="join-input" name="join_code" required>
+        </div>
+        <div class="text-center"> <!-- Wrapping the button inside a div with the "text-center" class -->
+            <button type="submit" class="btn btn-primary">Dołącz</button>
+        </div>
 
+    </form>
+    {#    <img src="{% static '/gra/game_index_background.jpg' %} ">#}
     <form id="host-login-form" action="{% url 'zaslepka' %}" method="post">
-      {% csrf_token %}
-      <label for="host-id-input">ID hosta:</label>
-      <input type="text" id="host-id-input" name="host_id" required>
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="host-id-input">ID hosta:</label>
+            <input type="text" class="form-control" id="host-id-input" name="host_id" required>
+        </div>
 
-      <label for="host-password-input">Hasło:</label>
-      <input type="password" id="host-password-input" name="host_password" required>
+        <div class="form-group">
+            <label for="host-password-input">Hasło:</label>
+            <input type="password" class="form-control" id="host-password-input" name="host_password" required>
+        </div>
 
-      <button type="submit">Zaloguj jako host</button>
+        <div class="text-center"> <!-- Wrapping the button inside a div with the "text-center" class -->
+            <button type="submit" class="btn btn-primary">Zaloguj jako host</button>
+        </div>
+
     </form>
 
-    <a id="create-game-btn" href="{% url 'host_game_create' %}">Utwórz grę</a>
-  </div>
+    {#    <a id="create-game-btn" class="btn btn-primary" href="{% url 'host_game_create' %}">Utwórz grę</a>#}
+    <div class="text-center"> <!-- Wrapping the button inside a div with the "text-center" class -->
+        <a id="create-game-btn" class="btn btn-primary" href="{% url 'host_game_create' %}">Utwórz grę</a>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
+

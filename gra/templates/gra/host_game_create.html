@@ -1,29 +1,74 @@
+{#<!DOCTYPE html>#}
+{#<html>#}
+{#<head>#}
+{#    <title>Twoja Aplikacja</title>#}
+{#</head>#}
+{#<body>#}
+{#{% include 'gra/navbar.html' %}#}
+{##}
+{#    <h1>Host</h1>#}
+{#    <div>#}
+{#        <form method="post" action="{% url 'game_creation' %}">#}
+{#            {% csrf_token %}#}
+{#            <button type="submit" name="create_game" value="1">Stwórz grę</button>#}
+{#        </form>#}
+{#    </div>#}
+{#    <h2>Dostępne gry</h2>#}
+{#    <div class="gry">#}
+{#        {% for gra in dostepne_gry %}#}
+{#            <div>#}
+{#                <form method="post" action="{% url 'host_game_filed' %}">#}
+{#                    {% csrf_token %}#}
+{#                    <input type="hidden" name="index_gry" value="{{ gra.nr_gry }}">#}
+{#                    <button type="submit">{{ gra.nazwa_gry }}</button>#}
+{#                </form>#}
+{#                <span>Czas trwania: {{ gra.czas_trwania }}</span>#}
+{#                <span>Lokalizacja: {{ gra.lokalizacja }}</span>#}
+{#            </div>#}
+{#        {% endfor %}#}
+{#    </div>#}
+{#</body>#}
+{#</html>#}
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Twoja Aplikacja</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
+    <style>
+        /* Additional custom styles can be added here */
+    </style>
 </head>
 <body>
+{% include 'gra/navbar.html' %}
+
+<div class="container">
     <h1>Host</h1>
     <div>
         <form method="post" action="{% url 'game_creation' %}">
             {% csrf_token %}
-            <button type="submit" name="create_game" value="1">Stwórz grę</button>
+            <button class="btn btn-primary" type="submit" name="create_game" value="1">Stwórz grę</button>
         </form>
     </div>
     <h2>Dostępne gry</h2>
     <div class="gry">
         {% for gra in dostepne_gry %}
-            <div>
-                <form method="post" action="{% url 'host_game_filed' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="index_gry" value="{{ gra.nr_gry }}">
-                    <button type="submit">{{ gra.nazwa_gry }}</button>
-                </form>
-                <span>Czas trwania: {{ gra.czas_trwania }}</span>
-                <span>Lokalizacja: {{ gra.lokalizacja }}</span>
+            <div class="card mb-3">
+                <div class="card-body">
+                    <form method="post" action="{% url 'host_game_filed' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="index_gry" value="{{ gra.nr_gry }}">
+                        <button class="btn btn-primary" type="submit">{{ gra.nazwa_gry }}</button>
+                    </form>
+                    <p class="card-text">Czas trwania: {{ gra.czas_trwania }}</p>
+                    <p class="card-text">Lokalizacja: {{ gra.lokalizacja }}</p>
+                </div>
             </div>
         {% endfor %}
     </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
+

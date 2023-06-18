@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css">
     <title>Twoja Aplikacja</title>
     <style>
         .map-container {
-            width: 400px;
-            height: 300px;
+            width: 100%;
+            height: 500px;
             border: 1px solid #ccc;
             margin-bottom: 10px;
+            margin-top: 20px;
             overflow: hidden;
         }
 
@@ -16,111 +18,132 @@
             height: 100%;
         }
     </style>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css"/>
 </head>
 <body>
+{% include 'gra/navbar.html' %}
+<div class="container text-center mt-3">
     <h1>Stwórz grę</h1>
-    <form id="game-form">
-        <div>
+</div>
+<form id="game-form">
+    <div class="container">
+        <div class="form-group">
             <label for="nazwa_hosta">Nazwa hosta:</label>
-            <input type="text" name="nazwa_hosta" id="nazwa_hosta" required>
+            <input type="text" class="form-control" name="nazwa_hosta" id="nazwa_hosta" required>
         </div>
         <div>
             <label for="haslo_hosta">Hasło hosta:</label>
-            <input type="password" name="haslo_hosta" id="haslo_hosta" required>
+            <input type="password" class="form-control" name="haslo_hosta" id="haslo_hosta" required>
         </div>
+
         <div>
             <label for="nazwa_gry">Nazwa gry:</label>
-            <input type="text" name="nazwa_gry" id="nazwa_gry" required>
+            <input type="text" class="form-control" name="nazwa_gry" id="nazwa_gry" required>
         </div>
         <div>
             <label for="czas_trwania">Czas Trwania:</label>
-            <input type="text" name="czas_trwania" id="czas_trwania" required>
+            <input type="text" class="form-control" name="czas_trwania" id="czas_trwania" required>
         </div>
         <div>
             <label for="localisation">Lokalizacja:</label>
-            <input type="text" name="localisation" id="localisation" required>
+            <input type="text" class="form-control" name="localisation" id="localisation" required>
         </div>
+    </div>
+    <div class="container">
         <div class="map-container">
             <div class="mapa" id="mapa"></div>
         </div>
+    </div>
+    <div class="container">
+
         <div id="zadania">
             <!-- Tutaj będą dynamicznie generowane pola do wprowadzania danych związanych z zadaniami -->
         </div>
-        <button type="button" onclick="dodajPolaZadania()">Dodaj zadanie</button>
-        <button type="button" onclick="zapisz()">Zapisz</button>
-    </form>
-    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script>
-        var mapa = L.map('mapa').setView([51.505, -0.09], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
-            maxZoom: 18,
-        }).addTo(mapa);
+    </div>
 
-        var markers = [];
-        var zadaniaCount = 0;
+    <div class="container" style="margin-bottom: 40px; margin-top: 10px" >
+        <button class="btn btn-primary mr-2"  type="button" onclick="dodajPolaZadania()">Dodaj zadanie</button>
+        <button class="btn btn-primary"  type="button" onclick="zapisz()">Zapisz</button>
+    </div>
+</form>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+<script>
+    var mapa = L.map('mapa').setView([51.505, -0.09], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
+        maxZoom: 18,
+    }).addTo(mapa);
 
-        mapa.on('click', function(e) {
-            var marker = L.marker(e.latlng).addTo(mapa);
-            markers.push(marker);
-            dodajPolaZadania(e.latlng.lat, e.latlng.lng);
-        });
+    var markers = [];
+    var zadaniaCount = 0;
 
-        function dodajPolaZadania(lat, lon) {
-            zadaniaCount++;
-            var form = document.getElementById('game-form');
-            var zadaniaDiv = document.getElementById('zadania');
+    mapa.on('click', function (e) {
+        var marker = L.marker(e.latlng).addTo(mapa);
+        markers.push(marker);
+        dodajPolaZadania(e.latlng.lat, e.latlng.lng);
+    });
 
-            var nowePoleNazwa = document.createElement('input');
-            nowePoleNazwa.type = 'text';
-            nowePoleNazwa.name = 'nazwa_zadania_' + zadaniaCount;
-            nowePoleNazwa.placeholder = 'Nazwa zadania';
-            //nowePoleNazwa.value = 'Zadanie ' + zadaniaCount;
+    function dodajPolaZadania(lat, lon) {
+        zadaniaCount++;
+        var form = document.getElementById('game-form');
+        var zadaniaDiv = document.getElementById('zadania');
+
+        var nowePoleNazwa = document.createElement('input');
+        nowePoleNazwa.type = 'text';
+        nowePoleNazwa.name = 'nazwa_zadania_' + zadaniaCount;
+        nowePoleNazwa.placeholder = 'Nazwa zadania';
+        nowePoleNazwa.classList.add('form-control', 'mt-2');
+        //nowePoleNazwa.value = 'Zadanie ' + zadaniaCount;
 
 
-            var nowePoleOpis = document.createElement('textarea');
-            nowePoleOpis.name = 'opis_zadania_' + zadaniaCount;
-            nowePoleOpis.placeholder = 'Opis zadania';
-            //nowePoleOpis.value = 'Opis ' + zadaniaCount;
+        var nowePoleOpis = document.createElement('textarea');
+        nowePoleOpis.name = 'opis_zadania_' + zadaniaCount;
+        nowePoleOpis.placeholder = 'Opis zadania';
+        nowePoleOpis.classList.add('form-control', 'mt-2');
 
-            var nowePoleHaslo = document.createElement('input');
-            nowePoleHaslo.type = 'password';
-            nowePoleHaslo.name = 'haslo_zadania_' + zadaniaCount;
-            //nowePoleHaslo.placeholder = 'Hasło do zadania';
+        //nowePoleOpis.value = 'Opis ' + zadaniaCount;
 
-            var nowePoleLat = document.createElement('input');
-            nowePoleLat.type = 'hidden';
-            nowePoleLat.name = 'lat_zadania_' + zadaniaCount;
-            nowePoleLat.value = lat;
+        var nowePoleHaslo = document.createElement('input');
+        nowePoleHaslo.type = 'password';
+        nowePoleHaslo.name = 'haslo_zadania_' + zadaniaCount;
+        nowePoleHaslo.placeholder = 'Hasło zadania';
+        nowePoleHaslo.classList.add('form-control', 'mt-2');
 
-            var nowePoleLon = document.createElement('input');
-            nowePoleLon.type = 'hidden';
-            nowePoleLon.name = 'lon_zadania_' + zadaniaCount;
-            nowePoleLon.value = lon;
 
-            zadaniaDiv.appendChild(nowePoleNazwa);
-            zadaniaDiv.appendChild(nowePoleOpis);
-            zadaniaDiv.appendChild(nowePoleHaslo);
-            zadaniaDiv.appendChild(nowePoleLat);
-            zadaniaDiv.appendChild(nowePoleLon);
-        }
+        //nowePoleHaslo.placeholder = 'Hasło do zadania';
 
-        function zapisz() {
-            // Pobierz token CSRF z ciasteczka Django
-            var csrftoken = getCookie('csrftoken');
+        var nowePoleLat = document.createElement('input');
+        nowePoleLat.type = 'hidden';
+        nowePoleLat.name = 'lat_zadania_' + zadaniaCount;
+        nowePoleLat.value = lat;
 
-            var form = document.getElementById('game-form');
-            var formData = new FormData(form);
+        var nowePoleLon = document.createElement('input');
+        nowePoleLon.type = 'hidden';
+        nowePoleLon.name = 'lon_zadania_' + zadaniaCount;
+        nowePoleLon.value = lon;
 
-            fetch('{% url 'host_game_filed' %}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrftoken  // Dodaj nagłówek CSRF Token
-                },
-                body: formData
-            })
-            .then(function(response) {
+        zadaniaDiv.appendChild(nowePoleNazwa);
+        zadaniaDiv.appendChild(nowePoleOpis);
+        zadaniaDiv.appendChild(nowePoleHaslo);
+        zadaniaDiv.appendChild(nowePoleLat);
+        zadaniaDiv.appendChild(nowePoleLon);
+    }
+
+    function zapisz() {
+        // Pobierz token CSRF z ciasteczka Django
+        var csrftoken = getCookie('csrftoken');
+
+        var form = document.getElementById('game-form');
+        var formData = new FormData(form);
+
+        fetch('{% url 'host_game_filed' %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken  // Dodaj nagłówek CSRF Token
+            },
+            body: formData
+        })
+            .then(function (response) {
                 if (response.ok) {
                     console.log('Dane zostały pomyślnie wysłane.');
                     window.location.href = '{% url 'host_game_filed' %}';  // Przekieruj na kolejną stronę po zapisaniu
@@ -128,26 +151,28 @@
                     console.log('Wystąpił błąd podczas wysyłania danych.');
                 }
             })
-            .catch(function(error) {
+            .catch(function (error) {
                 console.log('Wystąpił błąd podczas wysyłania danych:', error);
             });
-        }
+    }
 
-        // Funkcja do pobierania wartości ciasteczka o podanej nazwie
-        function getCookie(name) {
-            var cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                var cookies = document.cookie.split(';');
-                for (var i = 0; i < cookies.length; i++) {
-                    var cookie = cookies[i].trim();
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+    // Funkcja do pobierania wartości ciasteczka o podanej nazwie
+    function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+                var cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
         }
-    </script>
+        return cookieValue;
+    }
+</script>
 </body>
 </html>
+
+
