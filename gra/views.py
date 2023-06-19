@@ -44,15 +44,15 @@ def group_screen(request, ekipy_id=None):
 
         nick = request.POST['nick_hidden']
         ses_number = request.session.get('ses_number')
+        request.session['gracz_nick'] = str(nick)
         group_identifier = request.POST['grupa']
 
         if group_identifier.isdigit():
             # Dodawanie gracza do istniejącej grupy
-            ekipa = Ekipy.objects.get(ekipy_id=group_identifier)
+            ekipa = Ekipy.objects.get(ekipy_id=int(group_identifier))
         else:
             # Tworzenie nowej grupy
-            ekipa = Ekipy.objects.create(ekipy_id=random.randint(1, 10000), nazwa_ekipy=group_identifier,
-                                         sesje_ses_number=ses_number)
+            ekipa = Ekipy.objects.create(nazwa_ekipy=group_identifier, sesje_ses_number=ses_number)
 
         Gracze.objects.create(g_nick=nick, score=0, ekipy_ekipy_id=ekipa)
         czlonkowie = Gracze.objects.filter(ekipy_ekipy_id=ekipa)
@@ -67,8 +67,19 @@ def group_screen(request, ekipy_id=None):
         return render(request, 'gra/group_screen.html')
 
 
+
 def game_filed(request):
-    return render(request, 'gra/game_filed.html')
+    ses_number = request.session.get('ses_number')
+    g_nick = request.session.get('gracz_nick')
+    gracz = Gracze.objects.get(g_nick=g_nick)
+    ekipa = Ekipy.objects.get(ekipy_id=gracz.ekipy_ekipy_id_id)
+    sesja = Sesje.objects.get(ses_number=ekipa.sesje_ses_number)
+    gra = sesja.gry_nr_gry
+    tasks = Zadania.objects.filter(gry_nr_gry=gra)
+    context = {
+        'tasks': tasks
+    }
+    return render(request, 'gra/game_filed.html', context)
 
 
 def host_game_create(request):

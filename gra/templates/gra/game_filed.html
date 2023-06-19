@@ -88,13 +88,15 @@
     <div class="mt-4">
         <h2>Miejsca</h2>
         <select id="miejsca" class="form-control">
-            {% for miejsce in miejsca %}
-                <option value="{{ miejsce.id }}">{{ miejsce.nazwa }}</option>
+            {% for task in tasks %}
+                <option value="{{ task.id_zadania }}">{{ task.nazwa_zadania }}</option>
             {% endfor %}
         </select>
     </div>
     <div id="map" class="mt-4"></div>
 </div>
+
+
 <script>
     var map = L.map('map').setView([51.505, -0.09], 13);
 
@@ -103,19 +105,49 @@
         maxZoom: 18,
     }).addTo(map);
 
-    var punkty = [
-        {% for punkt in punkty %}
-            [{{ punkt.lat }}, {{ punkt.lng }}],
+    var tasks = [
+        {% for task in tasks %}
+            {
+                lat: {{ task.lat }},
+                lon: {{ task.lon }},
+                nazwa: "{{ task.nazwa_zadania }}",
+                opis: "{{ task.opis_zadania }}",
+                password: "{{ task.password }}"
+            },
         {% endfor %}
     ];
 
-    for (var i = 0; i < punkty.length; i++) {
-        L.marker(punkty[i]).addTo(map);
+    for (var i = 0; i < tasks.length; i++) {
+        var task = tasks[i];
+        var marker = L.marker([task.lat, task.lon]).addTo(map);
+
+
+
+
+        marker.on('click', function () {
+            var confirmation = confirm( task.nazwa + '\nCzy jesteś na miejscu?');
+            if (confirmation) {
+                var password = prompt('Proszę wprowadzić hasło:');
+                if (password !== null && password === task.password) {
+                    alert('Dziekujemy za przeslanie odpowedzi');
+                    // Perform further actions if needed
+
+                    // Remove the marker from the map
+                    map.removeLayer(marker);
+                } else {
+                    alert('Dziekujemy za przeslanie odpowedzi');
+                    map.removeLayer(marker);
+                    // Perform further actions if needed
+                }
+            }
+        });
     }
-
-
-
-
 </script>
+
+
+
+
 </body>
 </html>
+
+
