@@ -35,6 +35,7 @@ urlpatterns = [
     path('game_creation/', views.game_creation, name='game_creation'),
     path('host_game_filed/', views.host_game_filed, name='host_game_filed'),
     path('group_screen/<int:ekipy_id>/', views.group_screen, name='group_screen'),
+    path('update_group_statistic/', views.update_group_statistic, name='update_group_statistic'),
     # path('get_new/', views.newses, name='newses'),
     # path('<int:ses_id>/game/add_score/', views.room, name='name'),
     # path('test_photo', views.test_photo, name='test_photo'),

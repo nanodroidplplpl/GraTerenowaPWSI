@@ -1,66 +1,10 @@
-{#<!-- gra/pokaz_azymut.html -->#}
-{#<!DOCTYPE html>#}
-{#<html>#}
-{#<head>#}
-{#    <title>Pokaz Azymut</title>#}
-{#    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>#}
-{#    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css"/>#}
-{#    <style>#}
-{#        #map {#}
-{#            height: 400px;#}
-{#        }#}
-{#    </style>#}
-{#</head>#}
-{#<body>#}
-{#<h1>Pokaz Azymut</h1>#}
-{#<div id="azymut">#}
-{#    <h2>Azymut</h2>#}
-{#    <span>#}
-{#            {% if azymut %}#}
-{#                {{ azymut }}#}
-{#            {% else %}#}
-{#                Północ#}
-{#            {% endif %}#}
-{#        </span>#}
-{#    <h2>Zostało:</h2>#}
-{#    <span>{{ parametr_django }}</span>#}
-{#</div>#}
-{#<div>#}
-{#    <h2>Miejsca</h2>#}
-{#    <select id="miejsca">#}
-{#        {% for miejsce in miejsca %}#}
-{#            <option value="{{ miejsce.id }}">{{ miejsce.nazwa }}</option>#}
-{#        {% endfor %}#}
-{#    </select>#}
-{#</div>#}
-{#<div id="map"></div>#}
-{#<script>#}
-{#    var map = L.map('map').setView([51.505, -0.09], 13);#}
-{##}
-{#    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {#}
-{#        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',#}
-{#        maxZoom: 18,#}
-{#    }).addTo(map);#}
-{##}
-{#    var punkty = [#}
-{#        {% for punkt in punkty %}#}
-{#            [{{ punkt.lat }}, {{ punkt.lng }}],#}
-{#        {% endfor %}#}
-{#    ];#}
-{##}
-{#    for (var i = 0; i < punkty.length; i++) {#}
-{#        L.marker(punkty[i]).addTo(map);#}
-{#    }#}
-{#</script>#}
-{#</body>#}
-{#</html>#}
-
 {% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Pokaz Azymut</title>
     <script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <style>
@@ -73,32 +17,40 @@
 {% include 'gra/navbar.html' %}
 <div class="container">
     <h1 class="mt-5">Pokaz Azymut</h1>
-    <div id="azymut" class="mt-4">
-        <h2>Azymut</h2>
-        <span class="h3">
-            {% if azymut %}
-                {{ azymut }}
-            {% else %}
-                Północ
-            {% endif %}
-        </span>
-        <h2 class="mt-4">Zostało:</h2>
-        <span class="h3">{{ parametr_django }}</span>
-    </div>
-    <div class="mt-4">
-        <h2>Miejsca</h2>
-        <select id="miejsca" class="form-control">
-            {% for task in tasks %}
-                <option value="{{ task.id_zadania }}">{{ task.nazwa_zadania }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    <div id="map" class="mt-4"></div>
+    {% if completed %}
+        <h1 class="game-completed">Ukończono grę</h1>
+    {% else %}
+        <div id="azymut" class="mt-4">
+            <h2>Azymut</h2>
+            <span class="h3">
+                {% if azymut %}
+                    {{ azymut }}
+                {% else %}
+                    Północ
+                {% endif %}
+            </span>
+            <h2 class="mt-4">Zostało:</h2>
+            <span class="h3" id="odwiedzone-zadania">0/{{ tasks|length }}</span> <!-- Wyświetlanie ilości odwiedzonych zadań -->
+        </div>
+        <div class="mt-4">
+            <h2>Miejsca</h2>
+            <select id="miejsca" class="form-control">
+                {% for task in tasks %}
+                    <option value="{{ task.id_zadania }}">{{ task.nazwa_zadania }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div id="map" class="mt-4"></div>
+        <form id="hidden-form" style="display: none;">
+            {% csrf_token %}
+            <input type="hidden" name="id_zadania" id="id_zadania">
+            <input type="hidden" name="haslo" id="haslo">
+        </form>
+    {% endif %}
 </div>
 
-
 <script>
-    var map = L.map('map').setView([51.505, -0.09], 13);
+    var map = L.map('map').setView([54.71, 18.40], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors',
@@ -112,7 +64,8 @@
                 lon: {{ task.lon }},
                 nazwa: "{{ task.nazwa_zadania }}",
                 opis: "{{ task.opis_zadania }}",
-                password: "{{ task.password }}"
+                password: "{{ task.password }}",
+                id_zadania: "{{ task.id_zadania }}"
             },
         {% endfor %}
     ];
@@ -121,33 +74,57 @@
         var task = tasks[i];
         var marker = L.marker([task.lat, task.lon]).addTo(map);
 
-
-
-
         marker.on('click', function () {
-            var confirmation = confirm( task.nazwa + '\nCzy jesteś na miejscu?');
+            var confirmation = confirm(task.nazwa + '\nCzy jesteś na miejscu?');
             if (confirmation) {
                 var password = prompt('Proszę wprowadzić hasło:');
                 if (password !== null && password === task.password) {
-                    alert('Dziekujemy za przeslanie odpowedzi');
-                    // Perform further actions if needed
+                    alert('Dziękujemy za przesłanie odpowiedzi');
 
                     // Remove the marker from the map
                     map.removeLayer(marker);
+
+                    // Set the values of the hidden form
+                    $('#id_zadania').val(task.id_zadania);
+                    $('#haslo').val(password);
+
+                    // Send the data via AJAX
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'update_group_statistic' %}",
+                        data: $('#hidden-form').serialize(),
+                        headers: {'X-CSRFToken': '{{ csrf_token }}'}, // Dodaj nagłówek CSRF tokena
+                        success: function (response) {
+                            // Handle the response if needed
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle errors if needed
+                        }
+                    });
+
+                    // Aktualizacja wyświetlania ilości zadań odwiedzonych
+                    var odwiedzoneZadania = document.getElementById("odwiedzone-zadania");
+                    var iloscOdwiedzonych = parseInt(odwiedzoneZadania.textContent.split("/")[0]) + 1;
+                    odwiedzoneZadania.textContent = iloscOdwiedzonych + "/" + tasks.length;
+
+                    // Sprawdzenie, czy wszystkie zadania zostały wykonane
+                    if (iloscOdwiedzonych === tasks.length) {
+                        // Usuń wszystkie elementy ze strony
+                        $('body').empty();
+
+                        // Wyświetl napis "Koniec gry"
+                        var koniecGry = document.createElement('h1');
+                        koniecGry.textContent = 'Koniec gry';
+                        koniecGry.classList.add('game-over');
+                        document.body.appendChild(koniecGry);
+                    }
                 } else {
-                    alert('Dziekujemy za przeslanie odpowedzi');
-                    map.removeLayer(marker);
-                    // Perform further actions if needed
+                    alert('Nieprawidłowe hasło');
                 }
             }
         });
     }
 </script>
 
-
-
-
 </body>
 </html>
-
-

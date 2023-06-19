@@ -138,6 +138,8 @@ def host_game_filed(request):
             host.sesje_ses_number = sesja.ses_number
             host.save()
 
+            request.session['ses_number'] = sesja.ses_number
+
             for key, value in request.POST.items():
                 if key.startswith('nazwa_zadania_'):
                     indeks = key.split('_')[-1]
@@ -276,6 +278,7 @@ def host_game_filed(request):
 
         return render(request, 'gra/host_game_filed.html', context)
     else:
+        print("Jestem tu")
         ses_number = request.session['ses_number']
         nazwa_hosta = request.session['host_nick']
         request.session['im_on'] = True
@@ -298,6 +301,7 @@ def host_game_filed(request):
             points_data['points'].append(ekipa.ilosc_punktow)
             visited_points_data['labels'].append(ekipa.nazwa_ekipy)
             visited_points_data['visitedPoints'].append(ekipa.ilosc_punkow_odwiedzonych)
+            print(str(ekipa.ilosc_punktow))
 
         context = {
             'ses': str(ses_number),
@@ -308,7 +312,19 @@ def host_game_filed(request):
 
         return render(request, 'gra/host_game_filed.html', context)
 
-
+def update_group_statistic(request):
+    g_nick = request.session.get('gracz_nick')
+    gracz = Gracze.objects.get(g_nick=g_nick)
+    ekipy_id = gracz.ekipy_ekipy_id.ekipy_id  # Pobierz identyfikator ekipy
+    ekipa = Ekipy.objects.get(ekipy_id=ekipy_id)
+    ekipa.ilosc_punktow += 1
+    ekipa.ilosc_punkow_odwiedzonych += 1
+    ekipa.save()
+    print(str(ekipa.nazwa_ekipy))
+    if request.method == 'POST':
+        for key, value in request.POST.items():
+            print(f"{key}: {value}")
+    return render(request, 'gra/host_game_filed.html')
 
 
 def zaslepka(request):
