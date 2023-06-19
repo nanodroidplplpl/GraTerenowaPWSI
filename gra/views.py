@@ -150,7 +150,7 @@ def host_game_filed(request):
         }
 
         return render(request, 'gra/host_game_filed.html', context)  # Przekieruj na inny widok po zapisaniu danych
-    else:
+    elif request.method == 'POST':
         host_nick = request.session.get('host_nick')
 
         try:
@@ -177,12 +177,23 @@ def host_game_filed(request):
 
         return render(request, 'gra/host_game_filed.html', context)
 
-    request.session['ses_number'] = sesja.ses_number
-    request.session['host_nick'] = nazwa_hosta
+    # request.session['ses_number'] = sesja.ses_number
+    # request.session['host_nick'] = nazwa_hosta
+
+    ses_number = request.session['ses_number']
+    nazwa_hosta = request.session['host_nick']
+
+    # Pobranie listy ekip
+    sesja = Sesje.objects.get(ses_number=ses_number)
+    ekipy = Ekipy.objects.filter(sesje_ses_number=sesja.ses_number)
+
+    for ekipa in ekipy:
+        print(ekipa.nazwa_ekipy)
 
     context = {
         'ses': str(ses_number),
-        'h_nick': str(host_nick)
+        'h_nick': str(nazwa_hosta),
+        'ekipy': ekipy
     }
 
     return render(request, 'gra/host_game_filed.html', context)

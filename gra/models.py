@@ -14,6 +14,7 @@ class Ekipy(models.Model):
     sesje_ses_number = models.CharField(max_length=200, default='')
     ekipy_id = models.AutoField(primary_key=True)
     ilosc_punktow = models.IntegerField(default=0)
+    #ilosc_punkow_odwiedzonych = models.IntegerField(default=0)
 
 class Gry(models.Model):
     nr_gry = models.CharField(max_length=200, primary_key=True, default='')
