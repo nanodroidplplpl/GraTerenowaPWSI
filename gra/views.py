@@ -8,6 +8,9 @@ from django.utils import timezone
 from django.http import HttpResponseRedirect
 from .forms import CreateNewSession
 
+import matplotlib.pyplot as plt
+import io
+import base64
 
 # from game.models import Sesje, Gracze
 # from game.forms import PostScoreForm
@@ -77,6 +80,7 @@ def host_game_create(request):
 
     request.session['host_nick'] = request.POST.get('host_id')
     request.session['host_pswd'] = request.POST.get('host_password')
+    request.session['im_on'] = False
 
     context = {
         'dostepne_gry': dostepne_gry,
@@ -98,105 +102,202 @@ def generate_random_string(length):
 
 
 def host_game_filed(request):
-    if request.method == 'POST' and not (request.POST.get('index_gry') is not None):
-        nazwa_hosta = request.POST.get('nazwa_hosta')
-        haslo_hosta = request.POST.get('haslo_hosta')
+    if not request.session.get('im_on'):
+        if request.method == 'POST' and not (request.POST.get('index_gry') is not None):
+            nazwa_hosta = request.POST.get('nazwa_hosta')
+            haslo_hosta = request.POST.get('haslo_hosta')
 
-        # Zapisz dane hosta
-        host = Hosty(h_nick=nazwa_hosta, sesje_ses_number="")
-        host.save()
+            # Zapisz dane hosta
+            host = Hosty(h_nick=nazwa_hosta, sesje_ses_number="")
+            host.save()
 
-        # Utwórz grę
-        gra = Gry(nr_gry=generate_random_string(200), nazwa_gry=request.POST.get('nazwa_gry'), czas_trwania=request.POST
-                  .get('czas_trwania'), lokalizacja=request.POST.get('localisation'))
-        gra.save()
+            # Utwórz grę
+            gra = Gry(nr_gry=generate_random_string(200), nazwa_gry=request.POST.get('nazwa_gry'),
+                      czas_trwania=request.POST
+                      .get('czas_trwania'), lokalizacja=request.POST.get('localisation'))
+            gra.save()
 
-        # Utwórz sesję
-        sesja = Sesje(ses_number=generate_random_string(200), game_name="",
-                      end_time=timezone.now() + datetime.timedelta(hours=1),
-                      password=haslo_hosta, gry_nr_gry=gra)
-        sesja.save()
+            # Utwórz sesję
+            sesja = Sesje(ses_number=generate_random_string(200), game_name="",
+                          end_time=timezone.now() + datetime.timedelta(hours=1),
+                          password=haslo_hosta, gry_nr_gry=gra)
+            sesja.save()
 
-        # Powiąż sesję z hostem
-        host.sesje_ses_number = sesja.ses_number
-        host.save()
+            # Powiąż sesję z hostem
+            host.sesje_ses_number = sesja.ses_number
+            host.save()
 
-        for key, value in request.POST.items():
-            if key.startswith('nazwa_zadania_'):
-                indeks = key.split('_')[-1]
-                nazwa_zadania = value
-                opis_zadania = request.POST.get(f'opis_zadania_{indeks}')
-                haslo_zadania = request.POST.get(f'haslo_zadania_{indeks}')
-                lat_zadania = request.POST.get(f'lat_zadania_{indeks}')
-                lon_zadania = request.POST.get(f'lon_zadania_{indeks}')
+            for key, value in request.POST.items():
+                if key.startswith('nazwa_zadania_'):
+                    indeks = key.split('_')[-1]
+                    nazwa_zadania = value
+                    opis_zadania = request.POST.get(f'opis_zadania_{indeks}')
+                    haslo_zadania = request.POST.get(f'haslo_zadania_{indeks}')
+                    lat_zadania = request.POST.get(f'lat_zadania_{indeks}')
+                    lon_zadania = request.POST.get(f'lon_zadania_{indeks}')
 
-                # Zapisz zadanie
-                zadanie = Zadania(id_zadania=generate_random_string(200), nazwa_zadania=nazwa_zadania,
-                                  opis_zadania=opis_zadania, lat=lat_zadania, lon=lon_zadania,
-                                  password=haslo_zadania, gry_nr_gry=gra)
-                zadanie.save()
+                    # Zapisz zadanie
+                    zadanie = Zadania(id_zadania=generate_random_string(200), nazwa_zadania=nazwa_zadania,
+                                      opis_zadania=opis_zadania, lat=lat_zadania, lon=lon_zadania,
+                                      password=haslo_zadania, gry_nr_gry=gra)
+                    zadanie.save()
 
-                # Powiąż zadanie z punktem
-                punkt = Punktowi(p_nick=f"punkt_{indeks}", ses_num=sesja.ses_number,
-                                 sesje_ses_number=sesja.ses_number)
-                punkt.save()
+                    # Powiąż zadanie z punktem
+                    punkt = Punktowi(p_nick=f"punkt_{indeks}", ses_num=sesja.ses_number,
+                                     sesje_ses_number=sesja.ses_number)
+                    punkt.save()
 
-        request.session['ses_number'] = sesja.ses_number
-        request.session['host_nick'] = nazwa_hosta
+            ses_number = request.session['ses_number']
+            nazwa_hosta = request.session['host_nick']
+            request.session['im_on'] = True
 
-        context = {
-            'ses': sesja.ses_number,
-            'h_nick': nazwa_hosta
+            # Pobranie listy ekip
+            sesja = Sesje.objects.get(ses_number=ses_number)
+            ekipy = Ekipy.objects.filter(sesje_ses_number=sesja.ses_number)
+
+            points_data = {
+                'labels': [],
+                'points': []
+            }
+            visited_points_data = {
+                'labels': [],
+                'visitedPoints': []
+            }
+
+            for ekipa in ekipy:
+                points_data['labels'].append(ekipa.nazwa_ekipy)
+                points_data['points'].append(ekipa.ilosc_punktow)
+                visited_points_data['labels'].append(ekipa.nazwa_ekipy)
+                visited_points_data['visitedPoints'].append(ekipa.ilosc_punkow_odwiedzonych)
+
+            context = {
+                'ses': str(ses_number),
+                'h_nick': str(nazwa_hosta),
+                'points_data': points_data,
+                'visited_points_data': visited_points_data
+            }
+
+            return render(request, 'gra/host_game_filed.html', context)
+        elif request.method == 'POST':
+            host_nick = request.session.get('host_nick')
+
+            try:
+                gra = Gry.objects.get(nr_gry=request.POST.get('index_gry'))
+            except Gry.DoesNotExist:
+                return redirect('/')
+
+            host = Hosty(h_nick=host_nick, sesje_ses_number="")
+            host.save()
+
+            sesja = Sesje(ses_number=generate_random_string(200), game_name="",
+                          end_time=timezone.now() + datetime.timedelta(hours=1),
+                          password=request.session.get('host_pswd'), gry_nr_gry=gra)
+            sesja.save()
+            request.session['ses_number'] = sesja.ses_number
+
+            host.sesje_ses_number = sesja.ses_number
+            host.save()
+
+            ses_number = request.session['ses_number']
+            nazwa_hosta = request.session['host_nick']
+            request.session['im_on'] = True
+
+            # Pobranie listy ekip
+            sesja = Sesje.objects.get(ses_number=ses_number)
+            ekipy = Ekipy.objects.filter(sesje_ses_number=sesja.ses_number)
+
+            points_data = {
+                'labels': [],
+                'points': []
+            }
+            visited_points_data = {
+                'labels': [],
+                'visitedPoints': []
+            }
+
+            for ekipa in ekipy:
+                points_data['labels'].append(ekipa.nazwa_ekipy)
+                points_data['points'].append(ekipa.ilosc_punktow)
+                visited_points_data['labels'].append(ekipa.nazwa_ekipy)
+                visited_points_data['visitedPoints'].append(ekipa.ilosc_punkow_odwiedzonych)
+
+            context = {
+                'ses': str(ses_number),
+                'h_nick': str(nazwa_hosta),
+                'points_data': points_data,
+                'visited_points_data': visited_points_data
+            }
+
+            return render(request, 'gra/host_game_filed.html', context)
+
+        # request.session['ses_number'] = sesja.ses_number
+        # request.session['host_nick'] = nazwa_hosta
+
+        ses_number = request.session['ses_number']
+        nazwa_hosta = request.session['host_nick']
+        request.session['im_on'] = True
+
+        # Pobranie listy ekip
+        sesja = Sesje.objects.get(ses_number=ses_number)
+        ekipy = Ekipy.objects.filter(sesje_ses_number=sesja.ses_number)
+
+        points_data = {
+            'labels': [],
+            'points': []
+        }
+        visited_points_data = {
+            'labels': [],
+            'visitedPoints': []
         }
 
-        return render(request, 'gra/host_game_filed.html', context)  # Przekieruj na inny widok po zapisaniu danych
-    elif request.method == 'POST':
-        host_nick = request.session.get('host_nick')
-
-        try:
-            gra = Gry.objects.get(nr_gry=request.POST.get('index_gry'))
-        except Gry.DoesNotExist:
-            return redirect('/')
-
-        host = Hosty(h_nick=host_nick, sesje_ses_number="")
-        host.save()
-
-        sesja = Sesje(ses_number=generate_random_string(200), game_name="",
-                      end_time=timezone.now() + datetime.timedelta(hours=1),
-                      password=request.session.get('host_pswd'), gry_nr_gry=gra)
-        sesja.save()
-        request.session['ses_number'] = sesja.ses_number
-
-        host.sesje_ses_number = sesja.ses_number
-        host.save()
+        for ekipa in ekipy:
+            points_data['labels'].append(ekipa.nazwa_ekipy)
+            points_data['points'].append(ekipa.ilosc_punktow)
+            visited_points_data['labels'].append(ekipa.nazwa_ekipy)
+            visited_points_data['visitedPoints'].append(ekipa.ilosc_punkow_odwiedzonych)
 
         context = {
-            'ses': sesja.ses_number,
-            'h_nick': host_nick
+            'ses': str(ses_number),
+            'h_nick': str(nazwa_hosta),
+            'points_data': points_data,
+            'visited_points_data': visited_points_data
+        }
+
+        return render(request, 'gra/host_game_filed.html', context)
+    else:
+        ses_number = request.session['ses_number']
+        nazwa_hosta = request.session['host_nick']
+        request.session['im_on'] = True
+
+        # Pobranie listy ekip
+        sesja = Sesje.objects.get(ses_number=ses_number)
+        ekipy = Ekipy.objects.filter(sesje_ses_number=sesja.ses_number)
+
+        points_data = {
+            'labels': [],
+            'points': []
+        }
+        visited_points_data = {
+            'labels': [],
+            'visitedPoints': []
+        }
+
+        for ekipa in ekipy:
+            points_data['labels'].append(ekipa.nazwa_ekipy)
+            points_data['points'].append(ekipa.ilosc_punktow)
+            visited_points_data['labels'].append(ekipa.nazwa_ekipy)
+            visited_points_data['visitedPoints'].append(ekipa.ilosc_punkow_odwiedzonych)
+
+        context = {
+            'ses': str(ses_number),
+            'h_nick': str(nazwa_hosta),
+            'points_data': points_data,
+            'visited_points_data': visited_points_data
         }
 
         return render(request, 'gra/host_game_filed.html', context)
 
-    # request.session['ses_number'] = sesja.ses_number
-    # request.session['host_nick'] = nazwa_hosta
 
-    ses_number = request.session['ses_number']
-    nazwa_hosta = request.session['host_nick']
-
-    # Pobranie listy ekip
-    sesja = Sesje.objects.get(ses_number=ses_number)
-    ekipy = Ekipy.objects.filter(sesje_ses_number=sesja.ses_number)
-
-    # for ekipa in ekipy:
-    #     print(ekipa.nazwa_ekipy)
-
-    context = {
-        'ses': str(ses_number),
-        'h_nick': str(nazwa_hosta),
-        'ekipy': ekipy
-    }
-
-    return render(request, 'gra/host_game_filed.html', context)
 
 
 def zaslepka(request):
