@@ -187,8 +187,8 @@ def host_game_filed(request):
     sesja = Sesje.objects.get(ses_number=ses_number)
     ekipy = Ekipy.objects.filter(sesje_ses_number=sesja.ses_number)
 
-    for ekipa in ekipy:
-        print(ekipa.nazwa_ekipy)
+    # for ekipa in ekipy:
+    #     print(ekipa.nazwa_ekipy)
 
     context = {
         'ses': str(ses_number),
