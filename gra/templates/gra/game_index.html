@@ -53,7 +53,7 @@
 
     </form>
     {#    <img src="{% static '/gra/game_index_background.jpg' %} ">#}
-    <form id="host-login-form" action="{% url 'zaslepka' %}" method="post">
+    <form id="host-login-form" action="{% url 'host_game_create' %}" method="post">
         {% csrf_token %}
         <div class="form-group">
             <label for="host-id-input">ID hosta:</label>
@@ -66,15 +66,9 @@
         </div>
 
         <div class="text-center"> <!-- Wrapping the button inside a div with the "text-center" class -->
-            <button type="submit" class="btn btn-primary">Zaloguj jako host</button>
+            <button type="submit" id="create-game-btn" class="btn btn-primary">Utwórz grę</button>
         </div>
-
     </form>
-
-    {#    <a id="create-game-btn" class="btn btn-primary" href="{% url 'host_game_create' %}">Utwórz grę</a>#}
-    <div class="text-center"> <!-- Wrapping the button inside a div with the "text-center" class -->
-        <a id="create-game-btn" class="btn btn-primary" href="{% url 'host_game_create' %}">Utwórz grę</a>
-    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"></script>

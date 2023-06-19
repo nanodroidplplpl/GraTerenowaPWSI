@@ -8,16 +8,19 @@ from django.utils import timezone
 from django.http import HttpResponseRedirect
 from .forms import CreateNewSession
 
-#from game.models import Sesje, Gracze
-#from game.forms import PostScoreForm
+
+# from game.models import Sesje, Gracze
+# from game.forms import PostScoreForm
 # Create your views here.
 
 def game_index(request):
     return render(request, 'gra/game_index.html')
 
+
 def check_session_exists(ses_id):
     session_exists = Sesje.objects.filter(ses_number=ses_id).exists()
     return session_exists
+
 
 def choose_group(request):
     ses_num = request.POST.get('join_code')
@@ -29,6 +32,7 @@ def choose_group(request):
             'ekipy': ekipy,
         }
         return render(request, 'gra/choose_group.html', context)
+
 
 def group_screen(request, ekipy_id=None):
     if request.method == 'POST':
@@ -44,16 +48,16 @@ def group_screen(request, ekipy_id=None):
             ekipa = Ekipy.objects.get(ekipy_id=group_identifier)
         else:
             # Tworzenie nowej grupy
-            ekipa = Ekipy.objects.create(ekipy_id=random.randint(1, 10000), nazwa_ekipy=group_identifier, sesje_ses_number=ses_number)
+            ekipa = Ekipy.objects.create(ekipy_id=random.randint(1, 10000), nazwa_ekipy=group_identifier,
+                                         sesje_ses_number=ses_number)
 
         Gracze.objects.create(g_nick=nick, score=0, ekipy_ekipy_id=ekipa)
         czlonkowie = Gracze.objects.filter(ekipy_ekipy_id=ekipa)
 
-
         context = {
-            'inni_czlonkowie' : czlonkowie,
+            'inni_czlonkowie': czlonkowie,
             'tytul': ekipa.nazwa_ekipy,
-            'twój_nick' : nick
+            'twój_nick': nick
         }
         return render(request, 'gra/group_screen.html', context)  # Przekierowanie do strony powodzenia
     else:
@@ -63,13 +67,22 @@ def group_screen(request, ekipy_id=None):
 def game_filed(request):
     return render(request, 'gra/game_filed.html')
 
+
 def host_game_create(request):
+    if request.method == 'POST':
+        for key, value in request.POST.items():
+            print(f'Klucz: {key}, Wartość: {value}')
+
     dostepne_gry = Gry.objects.all()
+
+    request.session['host_nick'] = request.POST.get('host_id')
+    request.session['host_pswd'] = request.POST.get('host_password')
 
     context = {
         'dostepne_gry': dostepne_gry,
     }
     return render(request, 'gra/host_game_create.html', context)
+
 
 def game_creation(request):
     if request.method == 'POST':
@@ -77,10 +90,12 @@ def game_creation(request):
             print(f"{key}: {value}")
     return render(request, 'gra/game_creation.html')
 
+
 def generate_random_string(length):
     alphabet = string.ascii_letters + string.digits + string.punctuation
     random_string = ''.join(secrets.choice(alphabet) for _ in range(length))
     return random_string
+
 
 def host_game_filed(request):
     if request.method == 'POST' and not (request.POST.get('index_gry') is not None):
@@ -97,7 +112,8 @@ def host_game_filed(request):
         gra.save()
 
         # Utwórz sesję
-        sesja = Sesje(ses_number=generate_random_string(200), game_name="", end_time=timezone.now() + datetime.timedelta(hours=1),
+        sesja = Sesje(ses_number=generate_random_string(200), game_name="",
+                      end_time=timezone.now() + datetime.timedelta(hours=1),
                       password=haslo_hosta, gry_nr_gry=gra)
         sesja.save()
 
@@ -134,11 +150,35 @@ def host_game_filed(request):
         }
 
         return render(request, 'gra/host_game_filed.html', context)  # Przekieruj na inny widok po zapisaniu danych
+    else:
+        host_nick = request.session.get('host_nick')
 
-    ses_number = request.session.get('ses_number')
-    host_nick = request.session.get('host_nick')
+        try:
+            gra = Gry.objects.get(nr_gry=request.POST.get('index_gry'))
+        except Gry.DoesNotExist:
+            return redirect('/')
 
-    print(str(ses_number)+" "+str(host_nick))
+        host = Hosty(h_nick=host_nick, sesje_ses_number="")
+        host.save()
+
+        sesja = Sesje(ses_number=generate_random_string(200), game_name="",
+                      end_time=timezone.now() + datetime.timedelta(hours=1),
+                      password=request.session.get('host_pswd'), gry_nr_gry=gra)
+        sesja.save()
+        request.session['ses_number'] = sesja.ses_number
+
+        host.sesje_ses_number = sesja.ses_number
+        host.save()
+
+        context = {
+            'ses': sesja.ses_number,
+            'h_nick': host_nick
+        }
+
+        return render(request, 'gra/host_game_filed.html', context)
+
+    request.session['ses_number'] = sesja.ses_number
+    request.session['host_nick'] = nazwa_hosta
 
     context = {
         'ses': str(ses_number),
@@ -147,8 +187,11 @@ def host_game_filed(request):
 
     return render(request, 'gra/host_game_filed.html', context)
 
+
 def zaslepka(request):
     pass
+
+
 def index(request):
     if request.method == 'POST':
         data_ses = request.POST.get("sesnr")
@@ -157,7 +200,7 @@ def index(request):
         try:
             sss = Sesje.objects.get(ses_number=data_ses)
             if data_pass == sss.password:
-                return render(request, 'gra/room.html', {'sesja':sss})
+                return render(request, 'gra/room.html', {'sesja': sss})
         except:
             raise Http404("Nie ma takiej sesji sory...")
     return render(request, 'gra/index.html')
@@ -169,13 +212,13 @@ def room(request, ses_id):
             sss = Sesje.objects.get(ses_number=ses_id)
         except Sesje.DoesNotExist:
             raise Http404("Nie ma takiej sesji sory...")
-        return render(request, 'gra/room.html', {'sesja':sss})
+        return render(request, 'gra/room.html', {'sesja': sss})
     elif request.method == 'POST':
-        data = Sesje.objects.get(ses_number = ses_id)
-        #s = request.POST.get("score")
-        #s = int(s)
-        #if s < 10:
-        data.gracze_set.create(g_nick=request.POST.get("g_nickk"),score=request.POST.get("scoree"))
+        data = Sesje.objects.get(ses_number=ses_id)
+        # s = request.POST.get("score")
+        # s = int(s)
+        # if s < 10:
+        data.gracze_set.create(g_nick=request.POST.get("g_nickk"), score=request.POST.get("scoree"))
         print(type(request.POST.get("score")))
 
         try:
@@ -183,7 +226,7 @@ def room(request, ses_id):
             sss = Sesje.objects.get(ses_number=ses_id)
         except Sesje.DoesNotExist:
             raise Http404("Nie ma takiej sesji sory...")
-        return render(request, 'gra/room.html', {'sesja':sss})
+        return render(request, 'gra/room.html', {'sesja': sss})
 
 
 def newses(request):
@@ -198,18 +241,19 @@ def newses(request):
                 what = False
                 if form.is_valid():
                     game_name = form.cleaned_data["game_name"]
-                    s = Sesje(ses_number=num, game_name=game_name, end_time=timezone.now()+datetime.timedelta(days=7))
+                    s = Sesje(ses_number=num, game_name=game_name, end_time=timezone.now() + datetime.timedelta(days=7))
                     s.save()
-                    #return HttpResponseRedirect("/%i" % num)
+                    # return HttpResponseRedirect("/%i" % num)
                     return HttpResponseRedirect("creator/%i" % num)
     else:
         form = CreateNewSession()
 
     return render(request, 'gra/createSession.html', {"form": form})
 
+
 def creator_room(request):
     return render(request, 'gra/creator_map.html')
 
 
-# def test_photo(request):
-#     return render(request, 'gra/tesserac_ex.html')
+def test_photo(request):
+    return render(request, 'gra/tesserac_ex.html')
