@@ -1,72 +1,16 @@
-{#<!-- gra/game.html -->#}
-{#<!DOCTYPE html>#}
-{#<html>#}
-{#<head>#}
-{#    <title>Twoja Gra</title>#}
-{#    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>#}
-{#    <script>#}
-{#        $(document).ready(function() {#}
-{#            // Ustawianie wartości pola "nick_hidden" przed wysłaniem formularza#}
-{#            $('.ekipy button').click(function() {#}
-{#                var nickValue = $('#nick').val();#}
-{#                var form = $(this).closest('form');#}
-{#                var nickHidden = form.find('.nick_hidden');#}
-{#                nickHidden.val(nickValue);#}
-{#            });#}
-{##}
-{#            // Ustawianie wartości pola "nick_hidden" przed wysłaniem formularza#}
-{#            $('.moja_ekipa form').submit(function() {#}
-{#                var nickValue = $('#nick').val();#}
-{#                var nickHidden = $(this).find('.nick_hidden');#}
-{#                nickHidden.val(nickValue);#}
-{#            });#}
-{#        });#}
-{#    </script>#}
-{#</head>#}
-{#<body>#}
-{#    <h1>Dołącz do gry</h1>#}
-{#    <form method="post" action="{% url 'group_screen' %}" id="dołącz_do_gry">#}
-{#        {% csrf_token %}#}
-{#        <input type="text" name="nick" id="nick" placeholder="Wpisz swój nick..." required>#}
-{#        <input type="hidden" name="nick_hidden" class="nick_hidden" value="">#}
-{#    </form>#}
-{#    <h2>Stwórz grupę</h2>#}
-{#    <div class="moja_ekipa">#}
-{#        <form method="post" action="{% url 'group_screen' %}">#}
-{#            {% csrf_token %}#}
-{#            <input type="hidden" name="nick_hidden" class="nick_hidden" value="">#}
-{#            <input type="text" name="grupa" placeholder="Wpisz nazwę grupy..." required>#}
-{#            <button type="submit">Stwórz grupę</button>#}
-{#        </form>#}
-{#    </div>#}
-{#    <h2>Ekipy</h2>#}
-{#    <div class="ekipy">#}
-{#        {% for ekipa in ekipy %}#}
-{#            <form method="post" action="{% url 'group_screen' %}">#}
-{#                {% csrf_token %}#}
-{#                <input type="hidden" name="nick_hidden" class="nick_hidden" value="">#}
-{#                <input type="hidden" name="grupa" class="grupa" value="{{ ekipa.ekipy_id }}">#}
-{#                <button type="submit">#}
-{#                    {{ ekipa.nazwa_ekipy }}#}
-{#                    <span class="grupa">{{ ekipa.ekipy_id }}</span>#}
-{#                    <span class="czlonkowie">{{ ekipa.czlonkowie }}</span>#}
-{#                </button>#}
-{#            </form>#}
-{#        {% endfor %}#}
-{#    </div>#}
-{#</body>#}
-{#</html>#}
-
+<!-- gra/game.html -->
 <!DOCTYPE html>
 <html>
 <head>
     <title>Twoja Gra</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Ustawianie wartości pola "nick_hidden" przed wysłaniem formularza
-            $('.ekipy button').click(function() {
+            $('.ekipy button').click(function () {
                 var nickValue = $('#nick').val();
                 var form = $(this).closest('form');
                 var nickHidden = form.find('.nick_hidden');
@@ -74,57 +18,68 @@
             });
 
             // Ustawianie wartości pola "nick_hidden" przed wysłaniem formularza
-            $('.moja_ekipa form').submit(function() {
+            $('.moja_ekipa form').submit(function () {
                 var nickValue = $('#nick').val();
                 var nickHidden = $(this).find('.nick_hidden');
                 nickHidden.val(nickValue);
             });
         });
     </script>
+
+    <style>
+        .moja_ekipa {
+            display: grid;
+            place-items: center;
+        }
+
+        .ekipy {
+            display: grid;
+            place-items: center;
+        }
+
+    </style>
 </head>
 <body>
-    {% include 'gra/navbar.html' %}
-    <div class="container">
-        <h1>Dołącz do gry</h1>
-        <form method="post" action="{% url 'group_screen' %}" id="dołącz_do_gry">
-            {% csrf_token %}
-            <div class="form-group">
-                <input type="text" class="form-control" name="nick" id="nick" placeholder="Wpisz swój nick..." required>
-            </div>
-            <input type="hidden" name="nick_hidden" class="nick_hidden" value="">
-            <button type="submit" class="btn btn-primary">Dołącz</button>
-        </form>
+{% include 'gra/navbar.html' %}
 
-        <h2>Stwórz grupę</h2>
-        <div class="moja_ekipa">
-            <form method="post" action="{% url 'group_screen' %}">
-                {% csrf_token %}
-                <input type="hidden" name="nick_hidden" class="nick_hidden" value="">
-                <div class="form-group">
-                    <input type="text" class="form-control" name="grupa" placeholder="Wpisz nazwę grupy..." required>
-                </div>
-                <button type="submit" class="btn btn-primary">Stwórz grupę</button>
-            </form>
-        </div>
+<h1 class="ekipy mt-5">Dołącz do gry</h1>
+<form method="post" action="{% url 'group_screen' %}" id="dołącz_do_gry">
+    {% csrf_token %}
+    <div class="ekipy">
+        <input type="text" class="form-control" style="width: 400px;" name="nick" id="nick"
+               placeholder="Wpisz swój nick..." required>
 
-        <h2>Ekipy</h2>
-        <div class="ekipy">
-            {% for ekipa in ekipy %}
-                <form method="post" action="{% url 'group_screen' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="nick_hidden" class="nick_hidden" value="">
-                    <input type="hidden" name="grupa" class="grupa" value="{{ ekipa.ekipy_id }}">
-                    <button type="submit" class="btn btn-primary">
-                        {{ ekipa.nazwa_ekipy }}
-                        <span class="grupa">{{ ekipa.ekipy_id }}</span>
-                        <span class="czlonkowie">{{ ekipa.czlonkowie }}</span>
-                    </button>
-                </form>
-            {% endfor %}
-        </div>
     </div>
+    <input type="hidden" name="nick_hidden" class="nick_hidden" value="">
+</form>
+<h2 class="ekipy mt-4">Stwórz grupę</h2>
+<div class="moja_ekipa">
+    <form method="post" action="{% url 'group_screen' %}">
+        {% csrf_token %}
 
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+        <input type="hidden" name="nick_hidden" class="nick_hidden" value="">
+        <div>
+            <input type="text" class="form-control" style="width: 400px;" name="grupa"
+                   placeholder="Wpisz nazwę grupy..." required>
+        </div>
+        <button type="submit" class="btn btn-primary mt-3" style="width: 400px;">Stwórz grupę</button>
+
+    </form>
+</div>
+<h2 class="ekipy mt-5">Ekipy</h2>
+<div class="ekipy">
+    {% for ekipa in ekipy %}
+        <form method="post" action="{% url 'group_screen' %}">
+            {% csrf_token %}
+            <input type="hidden" name="nick_hidden" class="nick_hidden" value="">
+            <input type="hidden" name="grupa" class="grupa" value="{{ ekipa.ekipy_id }}">
+            <button type="submit" class="btn btn-outline-primary mt-2" style="width: 400px; ">
+                {{ ekipa.nazwa_ekipy }}
+                <span class="grupa">{{ ekipa.ekipy_id }}</span>
+                <span class="czlonkowie">{{ ekipa.czlonkowie }}</span>
+            </button>
+        </form>
+    {% endfor %}
+</div>
 </body>
 </html>
-

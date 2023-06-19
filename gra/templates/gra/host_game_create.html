@@ -1,34 +1,3 @@
-{#<!DOCTYPE html>#}
-{#<html>#}
-{#<head>#}
-{#    <title>Twoja Aplikacja</title>#}
-{#</head>#}
-{#<body>#}
-{#{% include 'gra/navbar.html' %}#}
-{##}
-{#    <h1>Host</h1>#}
-{#    <div>#}
-{#        <form method="post" action="{% url 'game_creation' %}">#}
-{#            {% csrf_token %}#}
-{#            <button type="submit" name="create_game" value="1">Stwórz grę</button>#}
-{#        </form>#}
-{#    </div>#}
-{#    <h2>Dostępne gry</h2>#}
-{#    <div class="gry">#}
-{#        {% for gra in dostepne_gry %}#}
-{#            <div>#}
-{#                <form method="post" action="{% url 'host_game_filed' %}">#}
-{#                    {% csrf_token %}#}
-{#                    <input type="hidden" name="index_gry" value="{{ gra.nr_gry }}">#}
-{#                    <button type="submit">{{ gra.nazwa_gry }}</button>#}
-{#                </form>#}
-{#                <span>Czas trwania: {{ gra.czas_trwania }}</span>#}
-{#                <span>Lokalizacja: {{ gra.lokalizacja }}</span>#}
-{#            </div>#}
-{#        {% endfor %}#}
-{#    </div>#}
-{#</body>#}
-{#</html>#}
 
 <!DOCTYPE html>
 <html>

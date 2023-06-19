@@ -4,37 +4,113 @@
 <html>
 <head>
     <title>{{ tytul }}</title>
+
+    <style>
+        .czlonkowie {
+            display: grid;
+            place-items: center;
+        }
+    </style>
+
+
 </head>
 <body>
-    {% include 'gra/navbar.html' %}
+{% include 'gra/navbar.html' %}
 
-    <h1>{{ tytul }}</h1>
-    <div class="ekipa">
-        <h2>Twój nick</h2>
-        <div class="czlonkowie">
-            <div class="czlonek">
-                <img src="{% static 'gra/images.png' %}" alt="Ikona użytkownika">
-                <span>{{ twój_nick }}</span>
-            </div>
-        </div>
-        <h2>Inni członkowie</h2>
-        <div class="czlonkowie">
-            {% for nick in inni_czlonkowie %}
-                <div class="czlonek">
-                    <span>{{ nick.g_nick }}</span>
-                </div>
-            {% endfor %}
-        </div>
+
+<h1 class="czlonkowie" style="margin-top: 30px;">{{ tytul }}</h1>
+<div class="czlonkowie">
+    <div>
+        <img src="{% static 'gra/images.png' %}" alt="Ikona użytkownika">
     </div>
+
+    <div class="d-flex justify-content-center align-items-center center-div" style="margin-top: 30px;">
+        <h3 class="display-4">{{ twój_nick }}</h3>
+    </div>
+
+</div>
+
+<h2 style="margin-top: 30px;" class="czlonkowie">Członkowie grupy</h2>
+
+
+<div class="czlonkowie">
+    <div class="row justify-content-center mt-3">
+        {% for nick in inni_czlonkowie %}
+            {% if inni_czlonkowie.count <= 6 %}
+                <div class="col-md-{{ 12|divisibleby:inni_czlonkowie.count }}">
+            {% else %}
+                <div class="col-md-4">
+            {% endif %}
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ nick.g_nick }}</h5>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+
+
+
+</div>
+
+<div class="center-div" style="margin-bottom: 10px;">
     <form method="post" action="{% url 'game_filed' %}">
         {% csrf_token %}
         <input type="hidden" name="grupa" value="{{ tytul }}">
         {% for nick in inni_czlonkowie %}
             <input type="hidden" name="czlonkowie" value="{{ nick.g_nick }}">
         {% endfor %}
-        <button type="submit">Start</button>
+        <div class="czlonkowie">
+            <button class="btn btn-primary mt-4 btn-lg " style="margin-bottom: 20px; width: 20%" type="submit">Start</button>
+        </div>
+
     </form>
+</div>
+
 </body>
 </html>
 
-
+{##}
+{#<!DOCTYPE html>#}
+{##}
+{#{% load static %}#}
+{#<html>#}
+{#<head>#}
+{#    <title>{{ tytul }}</title>#}
+{#</head>#}
+{#<body>#}
+{#    {% include 'gra/navbar.html' %}#}
+{##}
+{#    <h1>{{ tytul }}</h1>#}
+{#    <div class="ekipa">#}
+{#        <h2>Twój nick</h2>#}
+{#        <div class="czlonkowie">#}
+{#            <div class="czlonek">#}
+{#                <img src="{% static 'gra/images.png' %}" alt="Ikona użytkownika">#}
+{#                <span>{{ twój_nick }}</span>#}
+{#            </div>#}
+{#        </div>#}
+{#        <h2>Inni członkowie</h2>#}
+{#        <div class="czlonkowie">#}
+{#            {% for nick in inni_czlonkowie %}#}
+{#                <div class="czlonek">#}
+{#                    <span>{{ nick.g_nick }}</span>#}
+{#                </div>#}
+{#            {% endfor %}#}
+{#        </div>#}
+{#    </div>#}
+{#    <form method="post" action="{% url 'game_filed' %}">#}
+{#        {% csrf_token %}#}
+{#        <input type="hidden" name="grupa" value="{{ tytul }}">#}
+{#        {% for nick in inni_czlonkowie %}#}
+{#            <input type="hidden" name="czlonkowie" value="{{ nick.g_nick }}">#}
+{#        {% endfor %}#}
+{#        <button type="submit">Start</button>#}
+{#    </form>#}
+{#</body>#}
+{#</html>#}
+{##}
+{##}

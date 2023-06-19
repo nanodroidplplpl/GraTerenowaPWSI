@@ -38,6 +38,5 @@ urlpatterns = [
     # path('get_new/', views.newses, name='newses'),
     # path('<int:ses_id>/game/add_score/', views.room, name='name'),
     # path('test_photo', views.test_photo, name='test_photo'),
-    path('create_session/', views.newses, name='newses'),
     path('create_session/creator/<int:ses_id>', views.creator_room, name='creator_room'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

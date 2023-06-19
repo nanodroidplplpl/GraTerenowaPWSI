@@ -55,7 +55,7 @@
 {#</body>#}
 {#</html>#}
 
-
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -70,6 +70,7 @@
     </style>
 </head>
 <body>
+{% include 'gra/navbar.html' %}
 <div class="container">
     <h1 class="mt-5">Pokaz Azymut</h1>
     <div id="azymut" class="mt-4">
@@ -111,6 +112,10 @@
     for (var i = 0; i < punkty.length; i++) {
         L.marker(punkty[i]).addTo(map);
     }
+
+
+
+
 </script>
 </body>
 </html>

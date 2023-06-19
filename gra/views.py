@@ -49,6 +49,7 @@ def group_screen(request, ekipy_id=None):
         Gracze.objects.create(g_nick=nick, score=0, ekipy_ekipy_id=ekipa)
         czlonkowie = Gracze.objects.filter(ekipy_ekipy_id=ekipa)
 
+
         context = {
             'inni_czlonkowie' : czlonkowie,
             'tytul': ekipa.nazwa_ekipy,
@@ -210,5 +211,5 @@ def creator_room(request):
     return render(request, 'gra/creator_map.html')
 
 
-def test_photo(request):
-    return render(request, 'gra/tesserac_ex.html')
+# def test_photo(request):
+#     return render(request, 'gra/tesserac_ex.html')
